@@ -9,7 +9,7 @@ CLFLAGS:= --xp "param:compiler.preserveHlsOutput=1" --xp "param:compiler.generat
 
 ifneq ($(REPORT),none)
 CLFLAGS += --report $(REPORT)
-endif 
+endif
 
 LDCLFLAGS:=$(CLFLAGS)
 
@@ -29,16 +29,8 @@ CLC:=$(XILINX_SDACCEL)/bin/xocc
 LDCLC:=$(CLC)
 EMCONFIGUTIL := $(XILINX_SDACCEL)/bin/emconfigutil
 
-# By default build for X86, this could also be set to POWER to build for power
-ARCH:=X86
-
-ifeq ($(ARCH),POWER)
-DEVICES:= xilinx:adm-pcie-7v3:1ddr-ppc64le:2.1
-CXX:=$(XILINX_SDACCEL)/gnu/ppc64le/4.9.3/lnx64/bin/powerpc64le-linux-gnu-g++
-else
-DEVICES:=$(AWS_PLATFORM)
+DEVICES:=$(TARGET_DSA)
 CXX:=$(XILINX_SDACCEL)/bin/xcpp
-endif
 
 #if COMMON_REPO is not defined use the default value support existing Designs
 COMMON_REPO ?= ../../
@@ -62,5 +54,3 @@ sanitize_dsa = $(strip $(subst $(PERIOD),$(UNDERSCORE),$(subst $(COLON),$(UNDERS
 device2dsa = $(if $(filter $(suffix $(1)),.xpfm),$(shell $(COMMON_REPO)/utility/parsexpmf.py $(1) dsa 2>/dev/null),$(1))
 device2sandsa = $(call sanitize_dsa,$(call device2dsa,$(1)))
 device2dep = $(if $(filter $(suffix $(1)),.xpfm),$(dir $(1))/$(shell $(COMMON_REPO)/utility/parsexpmf.py $(1) hw 2>/dev/null) $(1),)
-
-
